@@ -1,6 +1,8 @@
 # Anrufersuche
 Telefonbuch-Skript zur Anrufersuche für Gigaset-Telefone
 
+![Anrufersuche](gigaset.jpg)
+
 ## Installation
 1. Skript `oertliche.php` auf Webserver mit PHP-Interpreter hochladen
 2. Aufruf im Browser testen:
