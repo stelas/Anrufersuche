@@ -15,12 +15,13 @@ function splitName($name) {
   return $res;
 }
 
-// Split '[Street 1 a,]12345 City' into key-value pairs 'st'=>'Street','nr'=>'1a','ct'=>'City'
+// Split '[Street 1 a,]12345 City' into key-value pairs 'st'=>'Street','nr'=>'1a','zc'=>'12345','ct'=>'City'
 function splitAddress($address) {
-  $res = array('st' => '', 'nr' => '', 'ct' => '');
+  $res = array('st' => '', 'nr' => '', 'zc' => '', 'ct' => '');
   if (preg_match('/^((.+) (\d+.*),)?(\d+) (.+)$/', $address, $m)) {
     $res['st'] = $m[2];
     $res['nr'] = str_replace(' ', '', $m[3]);
+    $res['zc'] = $m[4];
     $res['ct'] = strtok($m[5], ','); # Remove suburb from name
   }
   return $res;
@@ -48,6 +49,8 @@ function printResponse($entry) {
       echo '<st>' . $entry['st'] . '</st>';
     if (array_key_exists('nr', $entry) && !empty($entry['nr']))
       echo '<nr>' . $entry['nr'] . '</nr>';
+    if (array_key_exists('zc', $entry) && !empty($entry['zc']))
+      echo '<zc>' . $entry['zc'] . '</zc>';
     if (array_key_exists('ct', $entry) && !empty($entry['ct']))
       echo '<ct>' . $entry['ct'] . '</ct>';
     if (array_key_exists('hm', $entry) && !empty($entry['hm']))
@@ -60,7 +63,7 @@ function printResponse($entry) {
 function lookupCaller($number) {
   $dom = new DOMDocument();
   if (!@$dom->loadHTML(file_get_contents('http://www.dasoertliche.de/Controller?form_name=search_inv&ph=' . $number)))
-    return;
+    return; # HTML file unparseable
   $xp = new DomXPath($dom);
   $name = tidyString($xp->evaluate('string(//div[@id="entry_1"]//a[normalize-space(@class)="name"]/span[1])'));
   $addr = tidyString($xp->evaluate('string(//div[@id="entry_1"]//address[1])'));
