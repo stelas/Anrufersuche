@@ -22,7 +22,7 @@ nochmals mit `Sichern` übernehmen.
 ![Telefonbuch für Anrufersuche auswählen](gigaset3.jpg)
 
 ## Addendum
-Inspiriert von [Roland Greim](https://github.com/tigerxy/OnlineTelefonbuch)'s Skript,
-implementiert nach Gigaset's [Phonebook Search Protocol](https://teamwork.gigaset.com/gigawiki/display/GPPPO/Online+directory).
+Inspiriert von [Roland Greim](https://github.com/tigerxy/OnlineTelefonbuch)s Skript,
+implementiert nach Gigasets [Phonebook Search Protocol](https://teamwork.gigaset.com/gigawiki/display/GPPPO/Online+directory).
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CLG7D8PD7A88Q&source=url)
