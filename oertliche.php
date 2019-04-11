@@ -72,7 +72,7 @@ function lookupCaller($number) {
 
 header('Content-Type: text/xml; charset=utf-8');
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n\r\n";
-if (isset($_GET['hm']) && is_numeric($_GET['hm'])) {
+if (isset($_GET['hm']) && preg_match('/^\d+$/', $_GET['hm'])) {
   $caller = lookupCaller($_GET['hm']);
   if (is_array($caller))
     printResponse($caller);
