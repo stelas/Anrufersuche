@@ -1,8 +1,18 @@
 <?php
+header("Content-Type: text/xml; charset=utf-8");
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n\r\n";
 
-// Remove &nbsp; and leading/trailing whitespace
+//Add area code? true or false
+$addAreaCode = true;
+
+//Area code
+$areaCode = "030";
+
+// Remove &, &nbsp; and leading/trailing whitespace
 function tidyString($s) {
-  return trim(str_replace("\xc2\xa0", '', $s));
+  $search = array ("\xc2\xa0", "&");
+  $replace = array ( '', '');
+  return trim(str_replace($search,$replace, $s));
 }
 
 // Split 'Lastname [Firstname1 [Firstname2]]' into key-value pairs 'fn'=>'Firstname1 Firstname2','ln'=>'Lastname'
@@ -62,25 +72,27 @@ function printResponse($entry) {
 // Reverse phone number search on DasOertliche.de
 function lookupCaller($number) {
   $dom = new DOMDocument();
-  if (!@$dom->loadHTML(file_get_contents('http://www.dasoertliche.de/Controller?form_name=search_inv&ph=' . $number)))
+  if (!@$dom->loadHTML(file_get_contents('https://www.dasoertliche.de/Controller?form_name=search_inv&ph=' . $number)))
     return; # HTML file unparseable
   $xp = new DomXPath($dom);
-  $name = tidyString($xp->evaluate('string(//div[@id="entry_1"]//a[normalize-space(@class)="name"]/span[1])'));
+  $name = tidyString($xp->evaluate('string(//div[@id="entry_1"]//a[normalize-space(@class)="preview name st-treff-link"]/span[1])'));
   $addr = tidyString($xp->evaluate('string(//div[@id="entry_1"]//address[1])'));
   return array_merge(splitName($name), splitAddress($addr), array('hm' => $number));
 }
 
-header('Content-Type: text/xml; charset=utf-8');
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n\r\n";
-if (isset($_GET['hm']) && preg_match('/^\d+$/', $_GET['hm'])) {
-  $caller = lookupCaller($_GET['hm']);
+//Begin
+if (isset($_GET['hm']) && is_numeric($_GET['hm'])) {
+  $hm = $_GET["hm"];
+if ($addAreaCode && strncmp($hm,"0",1) != 0) {
+    $hm = $areaCode.$hm;
+}
+  $caller = lookupCaller($hm);
   if (is_array($caller))
-    printResponse($caller);
-  else
-    printError(6); # Service not available
-}
+	  printResponse($caller);
+  else {
+	  printError(6); # Service not available
+}}
 else {
-  printResponse(NULL);
+	printResponse(NULL);
 }
-
 ?>
