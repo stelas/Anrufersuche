@@ -75,7 +75,7 @@ function lookupCaller($number) {
   if (!@$dom->loadHTML(file_get_contents('https://www.dasoertliche.de/Controller?form_name=search_inv&ph=' . $number)))
     return; # HTML file unparseable
   $xp = new DomXPath($dom);
-  $name = tidyString($xp->evaluate('string(//div[@id="entry_1"]//a[normalize-space(@class)="preview name st-treff-link"]/span[1])'));
+  $name = tidyString($xp->evaluate('string(//div[@id="entry_1"]//a/span[1])'));
   $addr = tidyString($xp->evaluate('string(//div[@id="entry_1"]//address[1])'));
   return array_merge(splitName($name), splitAddress($addr), array('hm' => $number));
 }
