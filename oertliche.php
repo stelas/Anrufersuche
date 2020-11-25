@@ -2,11 +2,13 @@
 header("Content-Type: text/xml; charset=utf-8");
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n\r\n";
 
-//Add area code? true or false
+// ----------------------------------------
+// Add area code? true or false
 $addAreaCode = true;
 
-//Area code
+// Area code - change to your own area code
 $areaCode = "030";
+// ----------------------------------------
 
 // Remove &, &nbsp; and leading/trailing whitespace
 function tidyString($s) {
@@ -25,10 +27,10 @@ function splitName($name) {
   return $res;
 }
 
-// Split '[Street 1 a,]12345 City' into key-value pairs 'st'=>'Street','nr'=>'1a','zc'=>'12345','ct'=>'City'
+// Split 'Street 1 a, 12345  City' into key-value pairs 'st'=>'Street','nr'=>'1a','zc'=>'12345','ct'=>'City'
 function splitAddress($address) {
   $res = array('st' => '', 'nr' => '', 'zc' => '', 'ct' => '');
-  if (preg_match('/^((.+) (\d+.*),)?(\d+) (.+)$/', $address, $m)) {
+    if (preg_match('/^((.+?) ?(\d+.*),)? ([0-9]+)  (.+)$/', $address, $m)) {		
     $res['st'] = $m[2];
     $res['nr'] = str_replace(' ', '', $m[3]);
     $res['zc'] = $m[4];
@@ -75,12 +77,12 @@ function lookupCaller($number) {
   if (!@$dom->loadHTML(file_get_contents('https://www.dasoertliche.de/Controller?form_name=search_inv&ph=' . $number)))
     return; # HTML file unparseable
   $xp = new DomXPath($dom);
-  $name = tidyString($xp->evaluate('string(//div[@id="entry_1"]//a/span[1])'));
+  $name = tidyString($xp->evaluate('string(//div[@id="entry_1"]//a[normalize-space(@class)]/span[1])'));
   $addr = tidyString($xp->evaluate('string(//div[@id="entry_1"]//address[1])'));
   return array_merge(splitName($name), splitAddress($addr), array('hm' => $number));
 }
 
-//Begin
+// Begin
 if (isset($_GET['hm']) && is_numeric($_GET['hm'])) {
   $hm = $_GET["hm"];
 if ($addAreaCode && strncmp($hm,"0",1) != 0) {
