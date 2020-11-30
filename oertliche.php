@@ -39,6 +39,24 @@ function splitAddress($address) {
   return $res;
 }
 
+// Check if mail value is an email
+function checkMail($mail) {
+  $res = array('em' => '');
+    if (preg_match('/(.+@.+\..+)/', $mail, $m)) {		
+    $res['em'] = $m[1];
+  }
+  return $res;
+}
+
+// Check if url value ist an url
+function checkURL($url) {
+  $res = array('url' => '');
+    if (preg_match('/(http.+)/', $url, $m)) {		
+    $res['url'] = $m[1];
+  }
+  return $res;
+}
+
 // Output Gigaset error response
 function printError($id) {
   echo '<error repsonse="get_list" type="pb"><errorid>' . $id . '</errorid></error>';
@@ -65,6 +83,10 @@ function printResponse($entry) {
       echo '<zc>' . $entry['zc'] . '</zc>';
     if (array_key_exists('ct', $entry) && !empty($entry['ct']))
       echo '<ct>' . $entry['ct'] . '</ct>';
+    if (array_key_exists('em', $entry) && !empty($entry['em']))
+      echo '<em>' . $entry['em'] . '</em>';
+    if (array_key_exists('url', $entry) && !empty($entry['url']))
+      echo '<url>' . $entry['url'] . '</url>';
     if (array_key_exists('hm', $entry) && !empty($entry['hm']))
       echo '<hm>' . $entry['hm'] . '</hm>';
     echo '</entry></list>';
@@ -79,7 +101,12 @@ function lookupCaller($number) {
   $xp = new DomXPath($dom);
   $name = tidyString($xp->evaluate('string(//div[@id="entry_1"]//a[normalize-space(@class)]/span[1])'));
   $addr = tidyString($xp->evaluate('string(//div[@id="entry_1"]//address[1])'));
-  return array_merge(splitName($name), splitAddress($addr), array('hm' => $number));
+  $mail = tidyString($xp->evaluate('string(//div[@id="entry_1"]//a[2])'));
+  $url = tidyString($xp->evaluate('string(//div[@id="entry_1"]//a[2])'));
+  if (!preg_match('/(http.+)/', $url)) {		
+  	$url = tidyString($xp->evaluate('string(//div[@id="entry_1"]//a[3]/span[1])'));
+  }
+  return array_merge(splitName($name), splitAddress($addr), checkMail($mail), checkURL($url), array('hm' => $number));
 }
 
 // Begin
